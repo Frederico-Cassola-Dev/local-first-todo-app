@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import "./App.css";
 import { useQuery, useZero } from "@rocicorp/zero/react";
 import { Schema } from "../schema";
@@ -7,7 +7,7 @@ type TaskProps = {
   id: string;
   task: string;
   isCompleted: boolean;
-  createdAt: string;
+  createdAt: number;
 };
 
 function App() {
@@ -51,20 +51,13 @@ function App() {
     });
   };
 
-  const handleModifiedTask = (todo: TaskProps) => {
-    fetch(`http://localhost:8000/api/todos/${todo.id}`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        task: isModify.task,
-      }),
-    })
-      .then((response) => response.json)
-      .then(() => fetch("http://localhost:8000/api/todos"))
-      .then((response) => response.json())
-      .then((data) => {
-        setTodos(data.data);
-        setIsModify({ isModify: false, idTask: "", task: "" });
-      });
+  const handleModifiedTask = async (todo: TaskProps) => {
+    await z.mutate.todo.update({
+      id: todo.id,
+      task: isModify.task,
+      isCompleted: todo.isCompleted,
+    });
+    setIsModify({ isModify: false, idTask: "", task: "" });
   };
 
   return (
@@ -74,13 +67,10 @@ function App() {
 
       <ul>
         {todos
-          ?.sort(
-            (a: TaskProps, b: TaskProps): number =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-          )
-          .map((todo: TaskProps) => (
+          ?.sort((a, b): number => b.createdAt - a.createdAt)
+          .map((todo) => (
             <li key={todo.id}>
-              {isModify.idTask === todo.id ? (
+              {isModify.isModify && isModify.idTask === todo.id ? (
                 <>
                   <input
                     type="text"

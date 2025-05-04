@@ -6,7 +6,7 @@ const todo = table("todo")
     id: string(),
     task: string(),
     isCompleted: boolean().from("is_completed"),
-    createdAt: number().optional().from("created_at"),
+    createdAt: number().from("created_at"),
   })
   .primaryKey("id");
 
