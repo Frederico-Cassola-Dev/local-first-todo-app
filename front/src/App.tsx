@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import "./App.css";
+import { useQuery, useZero } from "@rocicorp/zero/react";
+import { Schema } from "../schema";
 
 type TaskProps = {
   id: string;
@@ -15,56 +17,38 @@ function App() {
     idTask: "",
     task: "",
   });
-  const [todos, setTodos] = useState<TaskProps[]>([]);
+
+  const z = useZero<Schema>();
+
+  const [todos] = useQuery(z.query.todo.orderBy("createdAt", "desc"));
+
+  console.log("test", todos);
 
   const handleAddTask = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTask(e.target.value);
   };
 
-  const handSendNewTask = useCallback(() => {
-    fetch("http://localhost:8000/api/todos", {
-      method: "POST",
-      body: JSON.stringify({
-        task: newTask,
-        isCompleted: false,
-      }),
-    })
-      .then(() => fetch("http://localhost:8000/api/todos"))
-      .then((response) => response.json())
-      .then((data) => {
-        setTodos(data.data);
-        setNewTask("");
-      });
-  }, [newTask]);
+  const handSendNewTask = useCallback(async () => {
+    await z.mutate.todo.insert({
+      id: crypto.randomUUID(),
+      task: newTask,
+      isCompleted: false,
+      createdAt: Date.now(),
+    });
+    setNewTask("");
+  }, [newTask, z]);
 
-  useEffect(() => {
-    fetch("http://localhost:8000/api/todos")
-      .then((response) => response.json())
-      .then((data) => setTodos(data.data));
-  }, []);
-
-  const handleDeleteTask = (todo: TaskProps) => {
-    console.log("taskId", todo);
-    fetch(`http://localhost:8000/api/todos/${todo.id}`, {
-      method: "DELETE",
-    })
-      .then((response) => response.json)
-      .then(() => fetch("http://localhost:8000/api/todos"))
-      .then((response) => response.json())
-      .then((data) => setTodos(data.data));
+  const handleDeleteTask = async (todo: TaskProps) => {
+    await z.mutate.todo.delete({
+      id: todo.id,
+    });
   };
 
-  const handleCompleteTask = (todo: TaskProps) => {
-    fetch(`http://localhost:8000/api/todos/${todo.id}`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        isCompleted: !todo.isCompleted,
-      }),
-    })
-      .then((response) => response.json)
-      .then(() => fetch("http://localhost:8000/api/todos"))
-      .then((response) => response.json())
-      .then((data) => setTodos(data.data));
+  const handleCompleteTask = async (todo: TaskProps) => {
+    await z.mutate.todo.update({
+      id: todo.id,
+      isCompleted: !todo.isCompleted,
+    });
   };
 
   const handleModifiedTask = (todo: TaskProps) => {
