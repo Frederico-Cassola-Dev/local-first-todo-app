@@ -26,7 +26,6 @@ function App() {
       method: "POST",
       body: JSON.stringify({
         task: newTask,
-        isCompleted: false,
       }),
     })
       .then(() => fetch("http://localhost:8000/api/todos"))

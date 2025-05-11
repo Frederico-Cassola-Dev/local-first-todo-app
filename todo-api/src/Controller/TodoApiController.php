@@ -23,6 +23,28 @@ class TodoApiController extends AbstractController
     ) {
     }
 
+    private function createJsonResponse(
+        mixed $data,
+        int $status = 200,
+        array $headers = [],
+        array $context = []
+    ): JsonResponse {
+        $response = $this->json(
+            $data,
+            $status,
+            // Add CORS headers to every response
+            headers: array_merge($headers, [
+                'Access-Control-Allow-Origin' => 'https://cfcassola.stoplight.io',
+                'Access-Control-Allow-Methods' => 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
+                'Access-Control-Allow-Headers' => 'Content-Type, Authorization, Origin, Accept',
+            ]),
+            context: $context
+        );
+
+        // Add Vary header for proper caching
+        $response->setVary('Origin');
+        return $response;
+    }
     #[Route('', name: 'create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
@@ -35,7 +57,10 @@ class TodoApiController extends AbstractController
             );
 
             if (!isset($data['task'])) {
-                return $this->json(['error' => 'Task field is required'], 400);
+                return $this->createJsonResponse(
+                    ['error' => 'Task field is required'],
+                    400
+                );
             }
 
             $todo = new Todo();
@@ -45,23 +70,27 @@ class TodoApiController extends AbstractController
 
             $errors = $this->validator->validate($todo);
             if (count($errors) > 0) {
-                return $this->json(['errors' => (string) $errors], 422);
+                return $this->createJsonResponse(
+                    ['errors' => (string) $errors],
+                    422
+                );
             }
 
             $this->em->persist($todo);
             $this->em->flush();
 
-            return $this->json(
+            return $this->createJsonResponse(
                 $todo,
                 201,
-                [],
-                ['groups' => ['todo:read']]
+                context: ['groups' => ['todo:read']]
             );
         } catch (\JsonException) {
-            return $this->json(['error' => 'Invalid JSON format'], 400);
+            return $this->createJsonResponse(
+                ['error' => 'Invalid JSON format'],
+                400
+            );
         }
     }
-
     #[Route('', name: 'list', methods: ['GET'])]
     public function list(TodoRepository $repository): JsonResponse
     {
