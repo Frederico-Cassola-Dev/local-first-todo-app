@@ -1,0 +1,500 @@
+{
+  "openapi": "3.1.0",
+  "x-stoplight": {
+    "id": "5ezs5psvwnd30"
+  },
+  "info": {
+    "title": "todo-api",
+    "description": "todo api",
+    "version": "1.0",
+    "summary": "Local First Todo Api",
+    "contact": {
+      "name": "todo api",
+      "url": "http://localhost:8000",
+      "email": "12364@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "termsOfService": "http://test.com"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": ""
+    }
+  ],
+  "tags": [
+    {
+      "name": "todos",
+      "description": "todos"
+    },
+    {
+      "name": "users",
+      "description": "users"
+    }
+  ],
+  "paths": {
+    "/users/{userId}": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "integer"
+          },
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "description": "Id of an existing user."
+        }
+      ],
+      "get": {
+        "summary": "Get User Info by User ID",
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "User Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "examples": {
+                  "Get User Alice Smith": {
+                    "value": {
+                      "id": 142,
+                      "firstName": "Alice",
+                      "lastName": "Smith",
+                      "email": "alice.smith@gmail.com",
+                      "dateOfBirth": "1997-10-31",
+                      "emailVerified": true,
+                      "signUpDate": "2019-08-24"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User Not Found"
+          }
+        },
+        "operationId": "get-users-userId",
+        "description": "Retrieve the information of the user with the matching user ID.",
+        "x-stoplight": {
+          "id": "h8p5gq4x9ul33"
+        }
+      },
+      "patch": {
+        "summary": "Update User Information",
+        "operationId": "patch-users-userId",
+        "responses": {
+          "200": {
+            "description": "User Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "examples": {
+                  "Updated User Rebecca Baker": {
+                    "value": {
+                      "id": 13,
+                      "firstName": "Rebecca",
+                      "lastName": "Baker",
+                      "email": "rebecca@gmail.com",
+                      "dateOfBirth": "1985-10-02",
+                      "emailVerified": false,
+                      "createDate": "2019-08-24"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User Not Found"
+          },
+          "409": {
+            "description": "Email Already Taken"
+          }
+        },
+        "description": "Update the information of an existing user.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "If a new email is given, the user's email verified property will be set to false."
+                  },
+                  "dateOfBirth": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "Update First Name": {
+                  "value": {
+                    "firstName": "Rebecca"
+                  }
+                },
+                "Update Email": {
+                  "value": {
+                    "email": "rebecca@gmail.com"
+                  }
+                },
+                "Update Last Name & Date of Birth": {
+                  "value": {
+                    "lastName": "Baker",
+                    "dateOfBirth": "1985-10-02"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Patch user properties to update."
+        },
+        "x-stoplight": {
+          "id": "0xenvcoem4kcf"
+        }
+      }
+    },
+    "/user": {
+      "post": {
+        "summary": "Create New User",
+        "operationId": "post-user",
+        "responses": {
+          "200": {
+            "description": "User Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "examples": {
+                  "New User Bob Fellow": {
+                    "value": {
+                      "id": 12,
+                      "firstName": "Bob",
+                      "lastName": "Fellow",
+                      "email": "bob.fellow@gmail.com",
+                      "dateOfBirth": "1996-08-24",
+                      "emailVerified": false,
+                      "createDate": "2020-11-18"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing Required Information"
+          },
+          "409": {
+            "description": "Email Already Taken"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "dateOfBirth": {
+                    "type": "string",
+                    "format": "date"
+                  }
+                },
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "email",
+                  "dateOfBirth"
+                ]
+              },
+              "examples": {
+                "Create User Bob Fellow": {
+                  "value": {
+                    "firstName": "Bob",
+                    "lastName": "Fellow",
+                    "email": "bob.fellow@gmail.com",
+                    "dateOfBirth": "1996-08-24"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Post the necessary fields for the API to create a new user."
+        },
+        "description": "Create a new user.",
+        "x-stoplight": {
+          "id": "4feu3oewjxjim"
+        }
+      }
+    },
+    "/api/todos": {
+      "get": {
+        "summary": "Get List Todos",
+        "description": "fetch list of all todos",
+        "tags": [
+          "todos"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "x-stoplight": {
+                        "id": "ceeu24mvgkddy"
+                      },
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Todo",
+                        "x-stoplight": {
+                          "id": "jqch9g1faaphw"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "Example 1": {
+                    "value": {
+                      "data": [
+                        {
+                          "id": "03671faa-1e65-4cbb-a081-f3c216cac9a6",
+                          "task": "string",
+                          "isCompleted": false,
+                          "createdAt": "2025-05-04T19:43:50+00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-todos",
+        "x-stoplight": {
+          "id": "1skq87x2uiunz"
+        },
+        "x-internal": true,
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [],
+      "post": {
+        "summary": "Create Todo",
+        "tags": [
+          "todos"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {}
+          }
+        },
+        "operationId": "post-api-todos",
+        "x-stoplight": {
+          "id": "yfgcbrjytnxan"
+        },
+        "description": "Todo creation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "task": {
+                    "type": "string",
+                    "x-stoplight": {
+                      "id": "ss0cd9rjro4ga"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "Content-Type",
+            "description": "application/json"
+          }
+        ],
+        "x-internal": false
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "title": "User",
+        "type": "object",
+        "description": "",
+        "examples": [
+          {
+            "id": 142,
+            "firstName": "Alice",
+            "lastName": "Smith",
+            "email": "alice.smith@gmail.com",
+            "dateOfBirth": "1997-10-31",
+            "emailVerified": true,
+            "signUpDate": "2019-08-24"
+          }
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the given user.",
+            "x-stoplight": {
+              "id": "16pvb44h09cjg"
+            }
+          },
+          "firstName": {
+            "type": "string",
+            "x-stoplight": {
+              "id": "7ojpzx2i300q1"
+            }
+          },
+          "lastName": {
+            "type": "string",
+            "x-stoplight": {
+              "id": "ijh9kq6hxy5gn"
+            }
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "x-stoplight": {
+              "id": "xata2ulm7hxbd"
+            }
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "example": "1997-10-31",
+            "x-stoplight": {
+              "id": "nnisjc8lgiavo"
+            }
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "description": "Set to true if the user's email has been verified.",
+            "x-stoplight": {
+              "id": "0c8xmnsheldbf"
+            }
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The date that the user was created.",
+            "x-stoplight": {
+              "id": "kvyre64dgt54a"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "email",
+          "emailVerified"
+        ],
+        "x-stoplight": {
+          "id": "djphso0pz80pc"
+        }
+      },
+      "Todo": {
+        "type": "object",
+        "x-examples": {
+          "Example 1": {
+            "id": "01969cd5-1f49-7a19-a81a-e8290296e65d",
+            "task": "sdfsdf",
+            "isCompleted": false,
+            "createdAt": "2025-05-04T19:45:35+00:00"
+          }
+        },
+        "properties": {
+          "id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "task": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "isCompleted": {
+            "type": "boolean",
+            "default": false
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "title": ""
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  },
+  "x-internal": false,
+  "security": [
+    {},
+    {
+      "ApiKeyAuth": [
+        "test"
+      ]
+    }
+  ]
+}
