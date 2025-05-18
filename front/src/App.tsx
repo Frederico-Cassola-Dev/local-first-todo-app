@@ -1,7 +1,7 @@
-import { useCallback, useState } from "react";
-import "./App.css";
-import { useQuery, useZero } from "@rocicorp/zero/react";
-import { Schema } from "../schema";
+import { useCallback, useState } from 'react';
+import './App.css';
+import { useQuery, useZero } from '@rocicorp/zero/react';
+import { Schema } from '../schema';
 
 type TaskProps = {
   id: string;
@@ -11,18 +11,17 @@ type TaskProps = {
 };
 
 function App() {
-  const [newTask, setNewTask] = useState<string>("");
+  const [newTask, setNewTask] = useState<string>('');
   const [isModify, setIsModify] = useState({
     isModify: false,
-    idTask: "",
-    task: "",
+    idTask: '',
+    task: '',
   });
 
   const z = useZero<Schema>();
+  const [todos] = useQuery(z.query.todo.orderBy('createdAt', 'desc'));
 
-  const [todos] = useQuery(z.query.todo.orderBy("createdAt", "desc"));
-
-  console.log("test", todos);
+  console.log('test', todos);
 
   const handleAddTask = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTask(e.target.value);
@@ -35,7 +34,8 @@ function App() {
       isCompleted: false,
       createdAt: Date.now(),
     });
-    setNewTask("");
+
+    setNewTask('');
   }, [newTask, z]);
 
   const handleDeleteTask = async (todo: TaskProps) => {
@@ -57,7 +57,8 @@ function App() {
       task: isModify.task,
       isCompleted: todo.isCompleted,
     });
-    setIsModify({ isModify: false, idTask: "", task: "" });
+
+    setIsModify({ isModify: false, idTask: '', task: '' });
   };
 
   return (
@@ -68,14 +69,14 @@ function App() {
       <ul>
         {todos
           ?.sort((a, b): number => b.createdAt - a.createdAt)
-          .map((todo) => (
+          .map(todo => (
             <li key={todo.id}>
               {isModify.isModify && isModify.idTask === todo.id ? (
                 <>
                   <input
                     type="text"
-                    onChange={(e) =>
-                      setIsModify((prevState) => ({
+                    onChange={e =>
+                      setIsModify(prevState => ({
                         ...prevState,
                         task: e.target.value,
                       }))
@@ -86,9 +87,9 @@ function App() {
                 </>
               ) : (
                 <label htmlFor={`${todo.id}`}>
-                  {todo.task} - {todo.isCompleted ? "✅" : "❌"}
+                  {todo.task} - {todo.isCompleted ? '✅' : '❌'}
                   <input
-                    style={{ visibility: "hidden" }}
+                    style={{ visibility: 'hidden' }}
                     id={`${todo.id}`}
                     type="checkbox"
                     checked={todo.isCompleted}
@@ -99,10 +100,10 @@ function App() {
               <button onClick={() => handleDeleteTask(todo)}>Delete</button>
               <button
                 onClick={() =>
-                  setIsModify((prevState) => ({
+                  setIsModify(prevState => ({
                     ...prevState,
                     isModify: !prevState.isModify,
-                    idTask: prevState.idTask.length > 0 ? "" : todo.id,
+                    idTask: prevState.idTask.length > 0 ? '' : todo.id,
                   }))
                 }
               >
